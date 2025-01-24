@@ -1,3 +1,14 @@
+.syndicate-config-dev
+.venv
+target
+**/target/
+/target/
+logs/
+
+.syndicate
+logs/
+.syndicate-config-*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
