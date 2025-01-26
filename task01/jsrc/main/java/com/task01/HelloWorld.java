@@ -1,4 +1,4 @@
-package com.awsserverless;
+package com.task01;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -11,7 +11,8 @@ import java.util.Map;
 @LambdaHandler(
     lambdaName = "hello_world",
 	roleName = "hello_world-role",
-	isPublishVersion = false,
+	isPublishVersion = true,
+	aliasName = "${lambdas_alias_name}",
 	logsExpiration = RetentionSetting.SYNDICATE_ALIASES_SPECIFIED
 )
 public class HelloWorld implements RequestHandler<Object, Map<String, Object>> {
