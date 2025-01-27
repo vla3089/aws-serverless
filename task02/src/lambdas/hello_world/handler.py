@@ -24,10 +24,14 @@ class HelloWorld(AbstractLambda):
                 'body': content
             }
         else:
-            return {
+            content = {
                 "statusCode": 400,
                 "message": "Bad request syntax or unsupported method. Request path: {0}. HTTP method: {1}".format(path, method)
-            }            
+            }
+            return {
+                'statusCode': 400,
+                'body': content
+            }
 
         
     
