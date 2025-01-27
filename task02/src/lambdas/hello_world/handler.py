@@ -18,8 +18,13 @@ class HelloWorld(AbstractLambda):
             pass
         
     def handle_request(self, event, context):
-        return {
+        content = {
+            "statusCode": 200,
             "message": "Hello from Lambda"
+        }
+        return {
+            'statusCode': 200,
+            'body': content
         }
     
 
