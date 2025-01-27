@@ -10,5 +10,5 @@ class HelloWorldLambdaTestCase(unittest.TestCase):
     """Common setups for this lambda"""
 
     def setUp(self) -> None:
-        self.HANDLER = LAMBDA_HANDLER.HelloWorld()
+        pass
 
