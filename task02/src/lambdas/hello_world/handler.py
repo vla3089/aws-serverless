@@ -1,0 +1,28 @@
+from commons.log_helper import get_logger
+from commons.abstract_lambda import AbstractLambda
+import json
+
+_LOG = get_logger(__name__)
+
+
+class HelloWorld(AbstractLambda):
+
+    def validate_request(self, event) -> dict:
+        pass
+        
+    def handle_request(self, event, context):
+        """
+        Explain incoming event here
+        """
+        print(json.dumps(event))  # Logs the event for inspection
+        return {
+            "statusCode": 200,
+            "message": "Hello from Lambda"
+        }
+    
+
+HANDLER = HelloWorld()
+
+
+def lambda_handler(event, context):
+    return HANDLER.lambda_handler(event=event, context=context)
