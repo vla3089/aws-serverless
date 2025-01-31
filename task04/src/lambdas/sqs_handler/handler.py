@@ -14,6 +14,7 @@ class SqsHandler(AbstractLambda):
         Explain incoming event here
         """
         # todo implement business logic
+        _LOG.info(f'{event}')
         return 200
     
 
