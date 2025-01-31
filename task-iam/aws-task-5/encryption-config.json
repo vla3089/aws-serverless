@@ -1,0 +1,13 @@
+{
+    "Bucket": "cmtr-7e60a31c-iam-sewk-bucket-3786966-2",
+    "ServerSideEncryptionConfiguration": {
+        "Rules": [
+            {
+                "ApplyServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "aws:kms",
+                    "KMSMasterKeyID": "arn:aws:kms:eu-central-1:905418349556:key/064bed4c-0d00-4f5c-a19e-e562d85c9043"
+                }
+            }
+        ]
+    }
+}

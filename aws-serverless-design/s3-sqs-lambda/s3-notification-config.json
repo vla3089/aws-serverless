@@ -1,0 +1,19 @@
+{
+    "QueueConfigurations": [
+        {
+            "Id": "InputUploadNotification", 
+            "QueueArn": "arn:aws:sqs:eu-central-1:905418349556:cmtr-7e60a31c-s3-snlt-queue",
+            "Events": ["s3:ObjectCreated:*"],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "prefix",
+                            "Value": "input/"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
