@@ -24,3 +24,7 @@ syndicate generate lambda \
 
 syndicate generate meta sqs_queue \
     --resource_name async_queue
+
+syndicate generate meta sns_topic \
+    --resource_name lambda_topic \
+    --region eu-central-1
