@@ -1,7 +1,7 @@
-from tests.test_hello_lambda import HelloLambdaLambdaTestCase
+from tests.test_hello_world import HelloWorldLambdaTestCase
 
 
-class TestSuccess(HelloLambdaLambdaTestCase):
+class TestSuccess(HelloWorldLambdaTestCase):
 
     def test_success(self):
         content = {

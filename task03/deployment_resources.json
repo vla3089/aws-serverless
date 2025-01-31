@@ -25,7 +25,7 @@
     "resource_type": "iam_policy",
     "tags": {}
   },
-  "task3-api-gateway": {
+  "task3_api": {
     "resource_type": "api_gateway",
     "deploy_stage": "stage",
     "dependencies": [],
@@ -35,7 +35,7 @@
         "GET": {
           "authorization_type": "NONE",
           "integration_type": "lambda",
-          "lambda_name": "hello_lambda",
+          "lambda_name": "hello_world",
           "api_key_required": false,
           "method_request_parameters": {},
           "integration_request_body_template": {},
