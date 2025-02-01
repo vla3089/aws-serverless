@@ -52,3 +52,10 @@ syndicate generate meta api_gateway_resource \
 syndicate generate meta api_gateway_resource_method \
     --api_name task5_api \
      --path "/events" --method POST --lambda_name api_handler
+
+syndicate generate meta dynamodb \
+    --resource_name Events \
+    --hash_key_name id \
+    --hash_key_type S \
+    --sort_key_name created_at \
+    --sort_key_type S
