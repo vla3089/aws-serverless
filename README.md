@@ -28,3 +28,27 @@ syndicate generate meta sqs_queue \
 syndicate generate meta sns_topic \
     --resource_name lambda_topic \
     --region eu-central-1
+
+
+# task05
+
+syndicate generate project --name task05
+cd task05
+generate config
+export SDCT_CONF=...
+
+syndicate generate lambda \
+    --name api_handler \
+    --runtime python
+
+syndicate generate meta api_gateway \
+    --resource_name task5_api \
+    --deploy_stage api
+
+syndicate generate meta api_gateway_resource \
+    --api_name task5_api \
+    --path events
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task5_api \
+     --path "/events" --method POST --lambda_name api_handler
