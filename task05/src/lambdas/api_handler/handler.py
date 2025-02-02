@@ -27,7 +27,7 @@ class ApiHandler(AbstractLambda):
             item = {
                 'id': event_id,
                 'created_at': datetime.utcnow().isoformat(),
-                'body': json.dumps(content)
+                'body': content
             }
             _LOG.info(f'Item to put to dynamodb: {item}')
             
