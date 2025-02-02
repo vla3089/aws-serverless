@@ -27,7 +27,7 @@ class ApiHandler(AbstractLambda):
             # Prepare item for DynamoDB
             item = {
                 'id': event_id,
-                'created_at': datetime.utcnow().isoformat(),
+                'createdAt': datetime.utcnow().isoformat(),
                 'principalId': principalId,
                 'body': content
             }
