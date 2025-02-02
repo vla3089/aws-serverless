@@ -16,7 +16,8 @@ class ApiHandler(AbstractLambda):
         _LOG.info(f'{event}')
         try:
             # Parse request body
-            content = event.get('body', '{}')
+            content = event.get('content', '{}')
+            principalId = event.get('principalId')
             _LOG.info(f'Content: {content}')
             
             # Generate a unique ID for the event
@@ -27,6 +28,7 @@ class ApiHandler(AbstractLambda):
             item = {
                 'id': event_id,
                 'created_at': datetime.utcnow().isoformat(),
+                'principalId': principalId,
                 'body': content
             }
             _LOG.info(f'Item to put to dynamodb: {item}')
