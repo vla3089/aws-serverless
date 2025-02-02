@@ -2,6 +2,7 @@ from commons.log_helper import get_logger
 from commons.abstract_lambda import AbstractLambda
 import json
 import boto3
+import os
 import uuid
 from datetime import datetime
 
@@ -35,14 +36,16 @@ class ApiHandler(AbstractLambda):
             
             # Save to DynamoDB
             
-            dynamodb = boto3.resource('dynamodb', region_name='eu-central-1')
-            table = dynamodb.Table('cmtr-7e60a31c-Events')
+            dynamodb = boto3.resource('dynamodb', region_name=os.environ['region'])
+            table_name = os.environ['table_name']
+            table = dynamodb.Table(table_name)
+
             table.put_item(Item=item)
             
             # Return response
             return {
                 'statusCode': 201,
-                'event': json.dumps({'event': item})
+                'body': item
             }
         except Exception as e:
             return {

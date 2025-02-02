@@ -15,7 +15,10 @@
     }
   ],
   "event_sources": [],
-  "env_variables": {},
+  "env_variables": {
+      "region": "${region}",
+      "table_name": "${target_table_name}"
+  },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
   "url_config": {},
