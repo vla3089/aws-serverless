@@ -39,9 +39,6 @@ class ApiHandler(AbstractLambda):
             region_name = os.environ['region']
 
             _LOG.info(f'region_name: {region_name}')
-            table_name = os.environ['table_name']
-            _LOG.info(f'table name from env: {table_name}')
-
             resources_prefix = os.environ['resources_prefix']
             resources_suffix = os.environ['resources_suffix']
             table_name = resources_prefix + "Events" + resources_suffix
