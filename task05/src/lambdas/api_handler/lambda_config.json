@@ -17,7 +17,8 @@
   "event_sources": [],
   "env_variables": {
       "region": "${region}",
-      "table_name": "${target_table_name}"
+      "resources_prefix":"${resources_prefix}",
+      "resources_suffix":"${resources_suffix}"
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
