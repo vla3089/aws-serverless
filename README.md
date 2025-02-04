@@ -62,3 +62,29 @@ syndicate generate meta dynamodb \
     --hash_key_type S \
     --sort_key_name created_at \
     --sort_key_type S
+
+
+# task 06
+
+# lambdas_alias_name: learn
+# target_table: Audit
+
+syndicate generate project --name task06
+cd task06
+generate config
+export SDCT_CONF=...
+
+syndicate generate lambda \
+    --name audit_producer \
+    --runtime python
+
+syndicate generate meta dynamodb \
+    --resource_name Configuration \
+    --hash_key_name key \
+    --hash_key_type S 
+
+syndicate generate meta dynamodb \
+    --resource_name Audit \
+    --hash_key_name id \
+    --hash_key_type S 
+
