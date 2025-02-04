@@ -17,11 +17,7 @@
   "event_sources": [],
   "env_variables": {
       "region": "${region}",
-      "table_name": {
-        "resource_name": "Events",
-        "resource_type": "dynamodb_table",
-        "parameter": "Table"
-      }
+      "target_table": "${target_table}"
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
