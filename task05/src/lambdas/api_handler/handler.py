@@ -37,13 +37,13 @@ class ApiHandler(AbstractLambda):
             # Save to DynamoDB
             
             region_name = os.environ['region']
+            target_table = os.environ['target_table']
             _LOG.info(f'region_name: {region_name}')
+            _LOG.info(f'target_table: {target_table}')
 
             dynamodb = boto3.resource('dynamodb', region_name=region_name)
 
-            table_name = os.environ['target_table']
-            _LOG.info(f'table_name: {table_name}')
-            table = dynamodb.Table(table_name)
+            table = dynamodb.Table(target_table)
 
             table.put_item(Item=item)
             
@@ -53,6 +53,7 @@ class ApiHandler(AbstractLambda):
                 'body': item
             }
         except Exception as e:
+            _LOG.info(json.dumps({'error': str(e)}))
             return {
                 'statusCode': 500,
                 'body': json.dumps({'error': str(e)})
