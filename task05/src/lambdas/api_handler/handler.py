@@ -37,14 +37,12 @@ class ApiHandler(AbstractLambda):
             # Save to DynamoDB
             
             region_name = os.environ['region']
-
             _LOG.info(f'region_name: {region_name}')
-            resources_prefix = os.environ['resources_prefix']
-            resources_suffix = os.environ['resources_suffix']
-            table_name = resources_prefix + "Events" + resources_suffix
-            _LOG.info(f'table name constructed: {table_name}')
 
             dynamodb = boto3.resource('dynamodb', region_name=region_name)
+
+            table_name = os.environ['target_table']
+            _LOG.info(f'table_name: {table_name}')
             table = dynamodb.Table(table_name)
 
             table.put_item(Item=item)
