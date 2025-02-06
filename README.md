@@ -88,3 +88,25 @@ syndicate generate meta dynamodb \
     --hash_key_name id \
     --hash_key_type S 
 
+add to the lambda event_sources:
+{
+    "resource_type": "dynamodb_trigger",
+    "target_table": "Configuration",
+    "batch_size": 1,
+    "function_response_types": ["ReportBatchItemFailures"]
+}
+
+# task 07
+
+syndicate generate project --name task07
+cd task06
+generate config
+export SDCT_CONF=...
+
+syndicate generate meta dynamodb \
+    --resource_name Events \
+    --hash_key_name id \
+    --hash_key_type S 
+
+syndicate generate appsync api --name "GraphQL_API"
+

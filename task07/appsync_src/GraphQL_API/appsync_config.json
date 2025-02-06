@@ -1,0 +1,18 @@
+{
+    "name": "GraphQL_API",
+    "resource_type": "appsync",
+    "primary_auth_type": "API_KEY",
+    "api_key_expiration_days": 7,
+    "schema_path": "schema.graphql",
+    "data_sources": [],
+    "resolvers": [],
+    "functions": [],
+    "log_config": {
+        "logging_enabled": true,
+        "field_log_level": "ERROR",
+        "cloud_watch_logs_role_name": "",
+        "exclude_verbose_content": false
+    },
+    "tags": {},
+    "deployment_package": "appsync_GraphQL_API.zip"
+}
