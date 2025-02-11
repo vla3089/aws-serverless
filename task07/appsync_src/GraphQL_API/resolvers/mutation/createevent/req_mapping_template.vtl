@@ -24,7 +24,7 @@
   "attributeValues": {
     "id": { "S": "$id" },
     "userId": { "N": "$ctx.args.userId" },
-    "payLoad": $util.toMap($ctx.args.payLoad),
+    "payLoad": $util.toMap($util.toJson($ctx.args.payLoad)),
     "createdAt": { "S": "$createdAt" }
   },
   "condition": {
