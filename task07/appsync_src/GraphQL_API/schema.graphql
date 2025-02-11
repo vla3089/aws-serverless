@@ -2,7 +2,16 @@ type Event {
 	id: ID!
 	userId: Int!
 	createdAt: AWSDateTime
-	payLoad: AWSJSON!
+	payLoad: PayLoad!
+}
+
+type PayLoad {
+	meta: Meta
+}
+
+type Meta {
+	key1: Int!
+	key2: String!
 }
 
 type Mutation {

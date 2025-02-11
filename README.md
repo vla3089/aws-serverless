@@ -123,5 +123,12 @@ syndicate generate appsync resolver \
     --type_name Mutation \
     --field_name createEvent \
     --data_source_name Events_Data_Source \
-    --function_name createEvent \
-    --runtime VTL
+    --runtime JS
+
+syndicate generate appsync resolver \
+    --api_name "GraphQL_API" \
+    --kind UNIT \
+    --type_name Query \
+    --field_name getEvent \
+    --data_source_name Events_Data_Source \
+    --runtime JS
