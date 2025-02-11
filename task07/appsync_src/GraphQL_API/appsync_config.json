@@ -15,7 +15,26 @@
       }
     }
   ],
-  "resolvers": [],
+  "resolvers": [
+    {
+      "kind": "UNIT",
+      "type_name": "Mutation",
+      "field_name": "createEvent",
+      "data_source_name": "Events_Data_Source",
+      "runtime": "VTL",
+      "request_mapping_template_path": "resolvers/mutation/createevent/req_mapping_template.vtl",
+      "response_mapping_template_path": "resolvers/mutation/createevent/resp_mapping_template.vtl"
+    },
+    {
+      "kind": "UNIT",
+      "type_name": "Query",
+      "field_name": "getEvent",
+      "data_source_name": "Events_Data_Source",
+      "runtime": "VTL",
+      "request_mapping_template_path": "resolvers/query/getevent/req_mapping_template.vtl",
+      "response_mapping_template_path": "resolvers/query/getevent/resp_mapping_template.vtl"
+    }
+  ],
   "functions": [],
   "log_config": {
     "logging_enabled": true,
