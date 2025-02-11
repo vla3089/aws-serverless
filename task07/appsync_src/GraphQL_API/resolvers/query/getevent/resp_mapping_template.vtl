@@ -11,5 +11,5 @@
   "id": "$ctx.result.id",
   "userId": $ctx.result.userId,
   "createdAt": "$ctx.result.createdAt",
-  "payLoad": $ctx.result.payLoad
+  "payLoad": $util.toJson($ctx.result.payLoad)
 }
