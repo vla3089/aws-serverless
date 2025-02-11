@@ -110,3 +110,18 @@ syndicate generate meta dynamodb \
 
 syndicate generate appsync api --name "GraphQL_API"
 
+syndicate generate appsync data_source \
+    --api_name "GraphQL_API" \
+    --name Events_Data_Source \
+    --type AMAZON_DYNAMODB \
+    --resource_name Events \
+    --service_role_name appsync_role
+
+syndicate generate appsync resolver \
+    --api_name "GraphQL_API" \
+    --kind UNIT \
+    --type_name Mutation \
+    --field_name createEvent \
+    --data_source_name Events_Data_Source \
+    --function_name createEvent \
+    --runtime VTL

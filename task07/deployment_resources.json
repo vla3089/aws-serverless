@@ -1,5 +1,5 @@
 {
-  "lambda-basic-execution": {
+  "appsync_policy": {
     "policy_content": {
       "Statement": [
         {
@@ -14,9 +14,7 @@
             "dynamodb:DeleteItem",
             "ssm:PutParameter",
             "ssm:GetParameter",
-            "kms:Decrypt",
-            "appsync:ListGraphqlApis",
-            "AWSAppSyncInvokeFullAccess"
+            "kms:Decrypt"
           ],
           "Effect": "Allow",
           "Resource": "*"
@@ -25,6 +23,18 @@
       "Version": "2012-10-17"
     },
     "resource_type": "iam_policy",
+    "tags": {}
+  },
+  "appsync_role": {
+    "resource_type": "iam_role",
+    "principal_service": "appsync",
+    "predefined_policies": [],
+    "custom_policies": [
+      "appsync_policy"
+    ],
+    "allowed_accounts": [],
+    "instance_profile": false,
+    "permissions_boundary": "",
     "tags": {}
   },
   "Events": {
