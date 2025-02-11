@@ -1,3 +1,5 @@
-## Pass back the result from DynamoDB. **
-                $util.toJson($ctx.result)
-                
+## Return only the required fields
+{
+  "id": "$context.result.id",
+  "createdAt": "$context.result.createdAt"
+}

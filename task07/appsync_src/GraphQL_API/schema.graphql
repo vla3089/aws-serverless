@@ -1,12 +1,12 @@
 type Event {
 	id: ID!
-	userId: ID!
+	userId: Int!
 	createdAt: AWSDateTime
-	payload: AWSJSON!
+	payLoad: AWSJSON!
 }
 
 type Mutation {
-  createEvent(userId: ID!, payLoad: AWSJSON!): Event
+  createEvent(userId: Int!, payLoad: AWSJSON!): Event
 }
 
 type Query { 
