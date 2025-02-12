@@ -99,7 +99,7 @@ add to the lambda event_sources:
 # task 07
 
 syndicate generate project --name task07
-cd task06
+cd task07
 generate config
 export SDCT_CONF=...
 
@@ -132,3 +132,22 @@ syndicate generate appsync resolver \
     --field_name getEvent \
     --data_source_name Events_Data_Source \
     --runtime JS
+
+
+# task 08
+syndicate generate project --name task08
+cd task08
+generate config
+export SDCT_CONF=...
+
+syndicate generate lambda \
+    --name uuid_generator \
+    --runtime python
+
+syndicate generate meta s3_bucket \
+    --resource_name uuid-storage
+
+syndicate generate meta cloudwatch_event_rule \
+    --resource_name uuid_trigger \
+    --rule_type schedule \
+    --expression "cron(* * * * ? *)" 
