@@ -151,3 +151,24 @@ syndicate generate meta cloudwatch_event_rule \
     --resource_name uuid_trigger \
     --rule_type schedule \
     --expression "cron(* * * * ? *)" 
+
+
+# task 09
+
+source .venv/bin/activate
+
+syndicate create_deploy_target_bucket
+
+syndicate generate project --name task09
+cd task09
+generate config
+export SDCT_CONF=...
+
+syndicate generate lambda \
+    --name api_handler \
+    --runtime python
+
+
+
+
+syndicate clean; syndicate build && syndicate deploy
