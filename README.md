@@ -198,6 +198,15 @@ syndicate generate meta api_gateway_authorizer \
     --api_name task11_api \
     --name task11_cognito_authorizer \
     --type COGNITO_USER_POOLS \
+    --provider_name simple-booking-userpool
+
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path signin
+
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path signup
 
 syndicate generate meta api_gateway_resource \
     --api_name task11_api \
@@ -227,9 +236,8 @@ syndicate generate meta api_gateway_resource_method \
      --method POST \
      --integration_type lambda \
      --lambda_name api_handler \
-     --authorization_type task11_cognito_authorizer \
-     --identity_source 
-     --api_key_required true 
+     --authorization_type CUSTOM \
+     --authorizer_name task11_cognito_authorizer
 
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
