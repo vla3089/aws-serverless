@@ -157,8 +157,6 @@ syndicate generate meta cloudwatch_event_rule \
 
 source .venv/bin/activate
 
-syndicate create_deploy_target_bucket
-
 syndicate generate project --name task09
 cd task09
 generate config
@@ -169,6 +167,98 @@ syndicate generate lambda \
     --runtime python
 
 
+syndicate generate lambda_layer \
+    --name sdk_layer \
+    --runtime python \
+    --link_with_lambda api_handler
 
+
+
+syndicate create_deploy_target_bucket
 
 syndicate clean; syndicate build && syndicate deploy
+
+
+
+# task11
+
+syndicate generate lambda \
+    --name api_handler \
+    --runtime python
+
+
+syndicate generate meta api_gateway \
+    --resource_name task11_api \
+    --deploy_stage api
+
+syndicate generate meta cognito_user_pool \
+    --resource_name simple-booking-userpool
+
+syndicate generate meta api_gateway_authorizer \
+    --api_name task11_api \
+    --name task11_cognito_authorizer \
+    --type COGNITO_USER_POOLS \
+
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path tables
+
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path reservations
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/signup" \
+     --method POST \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/signin" \
+     --method POST \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/tables" \
+     --method POST \
+     --integration_type lambda \
+     --lambda_name api_handler \
+     --authorization_type task11_cognito_authorizer \
+     --identity_source 
+     --api_key_required true 
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/tables" \
+     --method GET \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/reservations" \
+     --method POST \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/reservations" \
+     --method GET \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+
+syndicate generate meta dynamodb \
+    --resource_name Tables \
+    --hash_key_name key \
+    --hash_key_type S 
+
+syndicate generate meta dynamodb \
+    --resource_name Reservations \
+    --hash_key_name key \
+    --hash_key_type S 
