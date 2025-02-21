@@ -1,27 +1,47 @@
-from commons.log_helper import get_logger
-from commons.abstract_lambda import AbstractLambda
-from layers.sdk_layer import OpenMeteoClient
+import json
+import requests
 
-_LOG = get_logger(__name__)
+# Define default latitude and longitude (Berlin, Germany)
+DEFAULT_LATITUDE = 52.52
+DEFAULT_LONGITUDE = 13.41
 
+# Open-Meteo API URL template
+WEATHER_API_URL = "https://api.open-meteo.com/v1/forecast?latitude={}&longitude={}&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m"
 
-class ApiHandler(AbstractLambda):
+def lambda_handler(event, context):
+    """Lambda function to handle GET /weather requests"""
+    
+    # Validate HTTP method and path
+    method = event.get("httpMethod")
+    path = event.get("path")
+    if method != "GET" or path != "/weather":
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "statusCode": 400,
+                "message": f"Bad request syntax or unsupported method. Request path: {path}. HTTP method: {method}"
+            }),
+            "headers": {"Content-Type": "application/json"}
+        }
 
-    def validate_request(self, event) -> dict:
-        pass
+    try:
+        # Construct API request URL
+        url = WEATHER_API_URL.format(DEFAULT_LATITUDE, DEFAULT_LONGITUDE)
         
-    def handle_request(self, event, context):
-        client = OpenMeteoClient()
-        forecast = client.get_forecast()
+        # Fetch weather data from Open-Meteo
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for HTTP error responses
+        weather_data = response.json()
 
         return {
             "statusCode": 200,
-            "body": forecast
+            "body": json.dumps(weather_data),
+            "headers": {"Content-Type": "application/json"}
         }
-    
 
-HANDLER = ApiHandler()
-
-
-def lambda_handler(event, context):
-    return HANDLER.lambda_handler(event=event, context=context)
+    except requests.RequestException as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "Internal Server Error", "message": str(e)}),
+            "headers": {"Content-Type": "application/json"}
+        }
