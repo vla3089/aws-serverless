@@ -179,6 +179,22 @@ syndicate create_deploy_target_bucket
 syndicate clean; syndicate build && syndicate deploy
 
 
+# task 10
+
+syndicate generate project --name task10
+cd task10
+
+generate config
+export SDCT_CONF=...
+
+syndicate generate lambda \
+    --name processor \
+    --runtime python
+
+syndicate generate meta dynamodb \
+    --resource_name Weather \
+    --hash_key_name id \
+    --hash_key_type S 
 
 # task11
 
