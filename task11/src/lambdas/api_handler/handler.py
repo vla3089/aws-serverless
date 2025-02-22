@@ -198,28 +198,6 @@ def make_reservation(body):
         
         # Validate date format
         datetime.strptime(body["date"], "%Y-%m-%d")
-        
-
-        # Check if table exists
-        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"number": {"N": str(body["tableNumber"])}})
-        if "Item" not in table_response:
-            raise "Table not found"
-        
-        # Check for conflicting reservations
-        existing_reservations = dynamodb.scan(
-            TableName=RESERVATIONS_TABLE,
-            FilterExpression="tableNumber = :tableNum AND #date = :date AND ((slotTimeStart <= :endTime AND slotTimeEnd >= :startTime))",
-            ExpressionAttributeNames={"#date": "date"},
-            ExpressionAttributeValues={
-                ":tableNum": {"N": str(body["tableNumber"])},
-                ":date": {"S": body["date"]},
-                ":startTime": {"S": body["slotTimeStart"]},
-                ":endTime": {"S": body["slotTimeEnd"]}
-            }
-        )
-
-        if existing_reservations.get("Count", 0) > 0:
-            raise "conflicting reservations"
 
         # Generate a unique reservation ID
         reservation_id = str(uuid.uuid4())
