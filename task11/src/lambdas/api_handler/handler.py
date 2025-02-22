@@ -103,13 +103,17 @@ def signin(email, password):
 def create_table(body):
     try:
         table = dynamodb.Table(TABLES_TABLE)
-        table.put_item(Item={
+
+        item = {
             "id": body["id"],
             "number": body["number"],
             "places": body["places"],
             "isVip": body["isVip"],
             "minOrder": body.get("minOrder", None)
-        })
+        }
+        logger.info(f'Item to put to dynamodb: {item}')
+        
+        table.put_item(Item=item)
         return {"statusCode": 200, "body": json.dumps({"id": body["id"]})}
     except Exception as e:
         error_log = {
