@@ -32,7 +32,7 @@ def lambda_handler(event, context):
 
 def signup(email, password):
     try:
-        response = cognito_client.admin_create_user(
+        cognito_client.admin_create_user(
             UserPoolId=CUP_ID,
             Username=email,
             UserAttributes=[
@@ -46,7 +46,14 @@ def signup(email, password):
             Password=password,
             Permanent=True
         )
-        auth_response = cognito_client.initiate_auth(
+        return {"statusCode": 200}
+    except Exception:
+        return {"statusCode": 400}
+
+
+def login(email, password):
+    try:
+        response = cognito_client.initiate_auth(
             ClientId=CLIENT_ID,
             AuthFlow='USER_PASSWORD_AUTH',
             AuthParameters={
@@ -54,30 +61,8 @@ def signup(email, password):
                 'PASSWORD': password
             }
         )
-        return {"statusCode": 200, "body": json.dumps({"accessToken": auth_response["AuthenticationResult"]["AccessToken"]})}
-    except Exception as e:
-        return {"statusCode": 400, "body": json.dumps({"message": str(e)})}
+        return {"statusCode": 200, "body": json.dumps({"accessToken": response["AuthenticationResult"]["AccessToken"]})}
+    except Exception:
+        return {"statusCode": 400}
+    
 
-
-def login(email, password):
-    auth_params = {
-        'USERNAME': email,
-        'PASSWORD': password
-    }
-    auth_result = cognito_client.admin_initiate_auth(
-        UserPoolId=CUP_ID,
-        ClientId=CLIENT_ID,
-        AuthFlow='ADMIN_USER_PASSWORD_AUTH', AuthParameters=auth_params)
-
-    if auth_result:
-        id_token = auth_result['AuthenticationResult']['IdToken']
-    else:
-        id_token = None
-
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps(id_token)
-    }
