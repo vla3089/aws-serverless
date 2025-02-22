@@ -5,10 +5,12 @@ import re
 
 import boto3
 
-client = boto3.client('cognito-idp',
-                              os.environ.get('region', 'eu-central-1'))
+client = boto3.client('cognito-idp', os.environ.get('region', 'eu-central-1'))
+dynamodb = boto3.resource('dynamodb', os.environ.get('region', 'eu-central-1'))
 CUP_ID = os.environ.get('cup_id')
 CLIENT_ID = os.environ.get('cup_client_id')
+TABLES_TABLE = os.getenv("tables_table")
+RESERVATIONS_TABLE = os.getenv("reservations_table")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -18,13 +20,17 @@ def lambda_handler(event, context):
     body = json.loads(event['body'])
     request_path = event['resource']
     request_method = event['httpMethod']
-    email = body.get('email')
-    password = body.get('password')
 
     if request_path == '/signin' and request_method == "POST":
-        response = signin(email, password)
+        response = signin(body.get('email'), body.get('password'))
     elif request_path == '/signup' and request_method == "POST":
-        response = signup(email, password)
+        response = signup(body.get('email'), body.get('password'))
+    elif request_path == '/tables' and request_method == "POST":
+        response = create_table(body)
+    elif request_path == '/tables' and request_method == "GET":
+        response = get_tables(body)
+    elif event["httpMethod"] == "GET" and event["resource"] == "/tables/{tableId}":
+        return get_table(event["pathParameters"]["tableId"])
     else:
         response = {
             "statusCode": 400,
@@ -94,4 +100,35 @@ def signin(email, password):
         logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
         return {"statusCode": 400}
     
+def create_table(body):
+    try:
+        table = dynamodb.Table(TABLES_TABLE)
+        table.put_item(Item={
+            "id": body["id"],
+            "number": body["number"],
+            "places": body["places"],
+            "isVip": body["isVip"],
+            "minOrder": body.get("minOrder", None)
+        })
+        return {"statusCode": 200, "body": json.dumps({"id": body["id"]})}
+    except Exception:
+        return {"statusCode": 400}
 
+def get_tables():
+    try:
+        table = dynamodb.Table(TABLES_TABLE)
+        response = table.scan()
+        tables = response.get("Items", [])
+        return {"statusCode": 200, "body": json.dumps({"tables": tables})}
+    except Exception:
+        return {"statusCode": 400}
+
+def get_table(table_id):
+    try:
+        table = dynamodb.Table(TABLES_TABLE)
+        response = table.get_item(Key={"id": int(table_id)})
+        if "Item" not in response:
+            raise Exception("Table not found")
+        return {"statusCode": 200, "body": json.dumps(response["Item"])}
+    except Exception:
+        return {"statusCode": 400}
