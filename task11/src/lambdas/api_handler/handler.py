@@ -141,6 +141,7 @@ def get_tables():
         tables = []
         
         for item in response.get("Items", []):
+            logger.info(f'Item to put to dynamodb: {json.dumps(item)}')
             table = {
                 "id": int(item["id"]["N"]),
                 "number": int(item["tableNumber"]["N"]),
@@ -169,6 +170,7 @@ def get_table(table_id):
         if "Item" not in response:
             raise Exception("Table not found")
         
+        logger.info(f'Item to put to dynamodb: {json.dumps(response)}')
         item = {
                 "id": int(response["Item"]["id"]["N"]),
                 "number": int(response["Item"]["tableNumber"]["N"]),
