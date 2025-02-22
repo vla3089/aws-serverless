@@ -31,35 +31,32 @@ def lambda_handler(event, context):
 
 
 def signup(email, password):
-    custom_attr = [{
-        'Name': 'email',
-        'Value': email
-    }]
     try:
-        cognito_client.sign_up(
-            ClientId=CLIENT_ID,
+        response = cognito_client.admin_create_user(
+            UserPoolId=CUP_ID,
+            Username=email,
+            UserAttributes=[
+                {"Name": "email", "Value": email}
+            ],
+            MessageAction='SUPPRESS'
+        )
+        cognito_client.admin_set_user_password(
+            UserPoolId=CUP_ID,
             Username=email,
             Password=password,
-            UserAttributes=custom_attr)
-        cognito_client.admin_confirm_sign_up(
-            UserPoolId=CUP_ID, Username=email)
+            Permanent=True
+        )
+        auth_response = cognito_client.initiate_auth(
+            ClientId=CLIENT_ID,
+            AuthFlow='USER_PASSWORD_AUTH',
+            AuthParameters={
+                'USERNAME': email,
+                'PASSWORD': password
+            }
+        )
+        return {"statusCode": 200, "body": json.dumps({"accessToken": auth_response["AuthenticationResult"]["AccessToken"]})}
     except Exception as e:
-        print(str(e))
-        return {
-            "statusCode": 400,
-            "headers": {
-                "Content-Type": "application/json"
-            },
-            "body": json.dumps({'message': f'Cannot create user {email}.'})
-        }
-
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({'message': f'User {email} was created.'})
-    }
+        return {"statusCode": 400, "body": json.dumps({"message": str(e)})}
 
 
 def login(email, password):

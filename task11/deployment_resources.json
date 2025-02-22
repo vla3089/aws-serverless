@@ -34,7 +34,12 @@
   "task11_api": {
     "resource_type": "api_gateway",
     "deploy_stage": "api",
-    "dependencies": [],
+    "dependencies": [
+      {
+        "resource_name": "api_handler",
+        "resource_type": "lambda"
+      }
+    ],
     "resources": {
       "/signin": {
         "enable_cors": false,
@@ -161,7 +166,14 @@
     "sms_configuration": {},
     "username_attributes": [],
     "custom_attributes": [],
-    "client": {},
+    "client": {
+      "client_name": "client-app",
+      "generate_secret": false,
+      "explicit_auth_flows": [
+        "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+        "ALLOW_REFRESH_TOKEN_AUTH"
+      ]
+    },
     "tags": {}
   },
   "Tables": {
