@@ -4,6 +4,8 @@ import os
 import re
 
 import boto3
+import uuid
+from datetime import datetime
 
 client = boto3.client('cognito-idp', os.environ.get('region', 'eu-central-1'))
 dynamodb = boto3.client('dynamodb', os.environ.get('region', 'eu-central-1'))
@@ -31,6 +33,10 @@ def lambda_handler(event, context):
         response = get_tables(body)
     elif event["httpMethod"] == "GET" and event["resource"] == "/tables/{tableId}":
         return get_table(event["pathParameters"]["tableId"])
+    elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
+        return make_reservation(body)
+    elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
+        return get_reservations(body)
     else:
         response = {
             "statusCode": 400,
@@ -146,6 +152,75 @@ def get_table(table_id):
         if "Item" not in response:
             raise Exception("Table not found")
         return {"statusCode": 200, "body": json.dumps(response["Item"])}
+    except Exception as e:
+        error_log = {
+            "error": str(e),
+        }
+        logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
+        return {"statusCode": 400}
+    
+def make_reservation(body):
+    try:
+        # Validate required fields
+        required_fields = ["tableNumber", "clientName", "phoneNumber", "date", "slotTimeStart", "slotTimeEnd"]
+        if not all(field in body for field in required_fields):
+            return {"statusCode": 400, "body": json.dumps("Missing required fields")}
+        
+        # Validate date format
+        try:
+            datetime.strptime(body["date"], "%Y-%m-%d")
+        except ValueError:
+            return {"statusCode": 400, "body": json.dumps("Invalid date format, expected YYYY-MM-DD")}
+        
+        # Generate a unique reservation ID
+        reservation_id = str(uuid.uuid4())
+        
+        # Create reservation item
+        reservation = {
+            "reservationId": {"S": reservation_id},
+            "tableNumber": {"N": str(body["tableNumber"])},
+            "clientName": {"S": body["clientName"]},
+            "phoneNumber": {"S": body["phoneNumber"]},
+            "date": {"S": body["date"]},
+            "slotTimeStart": {"S": body["slotTimeStart"]},
+            "slotTimeEnd": {"S": body["slotTimeEnd"]}
+        }
+
+        logger.info(f'Item to put to dynamodb: {json.dumps(reservation)}')
+        
+        # Store in DynamoDB
+        dynamodb.put_item(TableName=RESERVATIONS_TABLE, Item=reservation)
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"reservationId": reservation_id})
+        }
+    except Exception as e:
+        error_log = {
+            "error": str(e),
+        }
+        logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
+        return {"statusCode": 400}
+    
+def get_reservations():
+    try:
+        response = dynamodb.scan(TableName=RESERVATIONS_TABLE)
+        reservations = []
+        
+        for item in response.get("Items", []):
+            reservations.append({
+                "tableNumber": int(item["tableNumber"]["N"]),
+                "clientName": item["clientName"]["S"],
+                "phoneNumber": item["phoneNumber"]["S"],
+                "date": item["date"]["S"],
+                "slotTimeStart": item["slotTimeStart"]["S"],
+                "slotTimeEnd": item["slotTimeEnd"]["S"]
+            })
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"reservations": reservations})
+        }
     except Exception as e:
         error_log = {
             "error": str(e),
