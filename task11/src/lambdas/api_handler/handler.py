@@ -18,25 +18,28 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 def lambda_handler(event, context):
-    logger.info(json.dumps(event, indent=4))
-    body = json.loads(event['body'])
+    logger.info(json.dumps(event, indent=4))    
     request_path = event['resource']
     request_method = event['httpMethod']
 
     if request_path == '/signin' and request_method == "POST":
+        body = json.loads(event['body'])
         response = signin(body.get('email'), body.get('password'))
     elif request_path == '/signup' and request_method == "POST":
+        body = json.loads(event['body'])
         response = signup(body.get('email'), body.get('password'))
     elif request_path == '/tables' and request_method == "POST":
+        body = json.loads(event['body'])
         response = create_table(body)
     elif request_path == '/tables' and request_method == "GET":
-        response = get_tables(body)
+        response = get_tables()
     elif event["httpMethod"] == "GET" and event["resource"] == "/tables/{tableId}":
         return get_table(event["pathParameters"]["tableId"])
     elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
+        body = json.loads(event['body'])
         return make_reservation(body)
     elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
-        return get_reservations(body)
+        return get_reservations()
     else:
         response = {
             "statusCode": 400,
@@ -164,14 +167,33 @@ def make_reservation(body):
         # Validate required fields
         required_fields = ["tableNumber", "clientName", "phoneNumber", "date", "slotTimeStart", "slotTimeEnd"]
         if not all(field in body for field in required_fields):
-            return {"statusCode": 400, "body": json.dumps("Missing required fields")}
+            raise "Missing required fields"
         
         # Validate date format
-        try:
-            datetime.strptime(body["date"], "%Y-%m-%d")
-        except ValueError:
-            return {"statusCode": 400, "body": json.dumps("Invalid date format, expected YYYY-MM-DD")}
+        datetime.strptime(body["date"], "%Y-%m-%d")
         
+
+        # Check if table exists
+        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"tableNumber": {"N": body["tableNumber"]}})
+        if "Item" not in table_response:
+            raise "Table not found"
+        
+        # Check for conflicting reservations
+        existing_reservations = dynamodb.scan(
+            TableName=RESERVATIONS_TABLE,
+            FilterExpression="tableNumber = :tableNum AND #date = :date AND ((slotTimeStart <= :endTime AND slotTimeEnd >= :startTime))",
+            ExpressionAttributeNames={"#date": "date"},
+            ExpressionAttributeValues={
+                ":tableNum": {"N": body["tableNumber"]},
+                ":date": {"S": body["date"]},
+                ":startTime": {"S": body["slotTimeStart"]},
+                ":endTime": {"S": body["slotTimeEnd"]}
+            }
+        )
+
+        if existing_reservations.get("Count", 0) > 0:
+            raise "conflicting reservations"
+
         # Generate a unique reservation ID
         reservation_id = str(uuid.uuid4())
         
