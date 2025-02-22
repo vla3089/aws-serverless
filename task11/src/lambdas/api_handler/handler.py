@@ -21,8 +21,8 @@ def lambda_handler(event, context):
     email = body.get('email')
     password = body.get('password')
 
-    if request_path == '/login' and request_method == "POST":
-        response = login(email, password)
+    if request_path == '/signin' and request_method == "POST":
+        response = signin(email, password)
     elif request_path == '/signup' and request_method == "POST":
         response = signup(email, password)
     else:
@@ -74,7 +74,7 @@ def signup(email, password):
         return {"statusCode": 400}
 
 
-def login(email, password):
+def signin(email, password):
     try:
         response = cognito_client.client.admin_initiate_auth(
             UserPoolId=CUP_ID,
