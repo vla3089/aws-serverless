@@ -6,7 +6,7 @@ import re
 import boto3
 
 client = boto3.client('cognito-idp', os.environ.get('region', 'eu-central-1'))
-dynamodb = boto3.resource('dynamodb', os.environ.get('region', 'eu-central-1'))
+dynamodb = boto3.client('dynamodb', os.environ.get('region', 'eu-central-1'))
 CUP_ID = os.environ.get('cup_id')
 CLIENT_ID = os.environ.get('cup_client_id')
 TABLES_TABLE = os.getenv("tables_table")
