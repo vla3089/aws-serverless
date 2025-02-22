@@ -4,6 +4,7 @@ import os
 import re
 
 import boto3
+from boto3.dynamodb.conditions import Key
 import uuid
 from datetime import datetime
 
@@ -200,9 +201,9 @@ def make_reservation(body):
         datetime.strptime(body["date"], "%Y-%m-%d")
 
         # Check if table exists
-        table_response = dynamodb.scan(TableName=TABLES_TABLE, 
-                                        FilterExpression="number = :tableNum",
-                                        ExpressionAttributeValues={":tableNum": {"N": str(body["tableNumber"])}}
+        table_response = dynamodb.scan(
+            TableName=TABLES_TABLE,
+            KeyConditionExpression=Key("number").eq(str(body["tableNumber"]))
         )
         if "Items" not in table_response or not table_response["Items"]:
             raise "Table not found"
