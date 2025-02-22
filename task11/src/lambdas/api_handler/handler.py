@@ -102,8 +102,6 @@ def signin(email, password):
     
 def create_table(body):
     try:
-        table = dynamodb.Table(TABLES_TABLE)
-
         item = {
             "id": {"N": str(body["id"])},
             "number": {"N": str(body["number"])},
@@ -114,9 +112,12 @@ def create_table(body):
         if "minOrder" in body:
             item["minOrder"] = {"N": str(body["minOrder"])}
 
+        logger.info(f'Tables table name: {TABLES_TABLE}')
         logger.info(f'Item to put to dynamodb: {item}')
         
-        table.put_item(Item=item)
+        dynamodb.put_item(
+            TableName = TABLES_TABLE,
+            Item=item)
         return {"statusCode": 200, "body": json.dumps({"id": body["id"]})}
     except Exception as e:
         error_log = {
