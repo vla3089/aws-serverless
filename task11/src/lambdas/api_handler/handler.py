@@ -137,7 +137,7 @@ def create_table(body):
 
 def get_tables():
     try:
-        response = dynamodb.scan()
+        response = dynamodb.scan(TableName = TABLES_TABLE)
         tables = response.get("Items", [])
         return {"statusCode": 200, "body": json.dumps({"tables": tables})}
     except Exception as e:
@@ -149,7 +149,7 @@ def get_tables():
 
 def get_table(table_id):
     try:
-        response = dynamodb.get_item(TableName = TABLES_TABLE, Key={"id": int(table_id)})
+        response = dynamodb.get_item(TableName = TABLES_TABLE, Key={"id": {"N" : str(table_id)}})
         if "Item" not in response:
             raise Exception("Table not found")
         return {"statusCode": 200, "body": json.dumps(response["Item"])}
