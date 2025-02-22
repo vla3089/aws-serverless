@@ -111,7 +111,11 @@ def create_table(body):
             "minOrder": body.get("minOrder", None)
         })
         return {"statusCode": 200, "body": json.dumps({"id": body["id"]})}
-    except Exception:
+    except Exception as e:
+        error_log = {
+            "error": str(e),
+        }
+        logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
         return {"statusCode": 400}
 
 def get_tables():
@@ -120,7 +124,11 @@ def get_tables():
         response = table.scan()
         tables = response.get("Items", [])
         return {"statusCode": 200, "body": json.dumps({"tables": tables})}
-    except Exception:
+    except Exception as e:
+        error_log = {
+            "error": str(e),
+        }
+        logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
         return {"statusCode": 400}
 
 def get_table(table_id):
@@ -130,5 +138,9 @@ def get_table(table_id):
         if "Item" not in response:
             raise Exception("Table not found")
         return {"statusCode": 200, "body": json.dumps(response["Item"])}
-    except Exception:
+    except Exception as e:
+        error_log = {
+            "error": str(e),
+        }
+        logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
         return {"statusCode": 400}
