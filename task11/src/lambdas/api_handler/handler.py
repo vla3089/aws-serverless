@@ -174,7 +174,7 @@ def make_reservation(body):
         
 
         # Check if table exists
-        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"tableNumber": {"N": body["tableNumber"]}})
+        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"tableNumber": {"N": str(body["tableNumber"])}})
         if "Item" not in table_response:
             raise "Table not found"
         
@@ -184,7 +184,7 @@ def make_reservation(body):
             FilterExpression="tableNumber = :tableNum AND #date = :date AND ((slotTimeStart <= :endTime AND slotTimeEnd >= :startTime))",
             ExpressionAttributeNames={"#date": "date"},
             ExpressionAttributeValues={
-                ":tableNum": {"N": body["tableNumber"]},
+                ":tableNum": {"N": str(body["tableNumber"])},
                 ":date": {"S": body["date"]},
                 ":startTime": {"S": body["slotTimeStart"]},
                 ":endTime": {"S": body["slotTimeEnd"]}
