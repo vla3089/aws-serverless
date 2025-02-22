@@ -3,12 +3,17 @@
   "name": "api_handler",
   "func_name": "handler.lambda_handler",
   "resource_type": "lambda",
-  "iam_role_name": "BasicExecutionRole",
+  "iam_role_name": "api_handler-role",
   "runtime": "python3.10",
   "memory": 128,
   "timeout": 100,
   "lambda_path": "lambdas/api_handler",
-  "dependencies": [],
+  "dependencies": [
+    {
+      "resource_name": "${booking_userpool}",
+      "resource_type": "cognito_idp"
+    }
+  ],
   "event_sources": [],
   "env_variables": {
     "cup_id": {
@@ -24,6 +29,7 @@
   },
   "publish_version": true,
   "alias": "${lambdas_alias_name}",
+  "region": "${region}",
   "url_config": {},
   "ephemeral_storage": 512,
   "logs_expiration": "${logs_expiration}",

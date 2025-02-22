@@ -198,10 +198,15 @@ syndicate generate meta dynamodb \
 
 # task11
 
+syndicate generate project --name task11
+cd task11
+
+generate config
+export SDCT_CONF=...
+
 syndicate generate lambda \
     --name api_handler \
     --runtime python
-
 
 syndicate generate meta api_gateway \
     --resource_name task11_api \
@@ -216,21 +221,22 @@ syndicate generate meta api_gateway_authorizer \
     --type COGNITO_USER_POOLS \
     --provider_name simple-booking-userpool
 
+# sign in endpoint configuration
 syndicate generate meta api_gateway_resource \
     --api_name task11_api \
     --path signin
 
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/signin" \
+     --method POST \
+     --integration_type lambda \
+     --lambda_name api_handler
+
+# sign up endpoint configuration
 syndicate generate meta api_gateway_resource \
     --api_name task11_api \
     --path signup
-
-syndicate generate meta api_gateway_resource \
-    --api_name task11_api \
-    --path tables
-
-syndicate generate meta api_gateway_resource \
-    --api_name task11_api \
-    --path reservations
 
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
@@ -239,12 +245,19 @@ syndicate generate meta api_gateway_resource_method \
      --integration_type lambda \
      --lambda_name api_handler
 
+# tables endpoint configuration
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path tables
+
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
-     --path "/signin" \
-     --method POST \
+     --path "/tables" \
+     --method GET \
      --integration_type lambda \
-     --lambda_name api_handler
+     --lambda_name api_handler \
+     --authorization_type CUSTOM \
+     --authorizer_name task11_cognito_authorizer
 
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
@@ -255,27 +268,30 @@ syndicate generate meta api_gateway_resource_method \
      --authorization_type CUSTOM \
      --authorizer_name task11_cognito_authorizer
 
+# reservations endpoint configuration
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path reservations
+
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
-     --path "/tables" \
+     --path "/reservations" \
      --method GET \
      --integration_type lambda \
-     --lambda_name api_handler
+     --lambda_name api_handler \
+     --authorization_type CUSTOM \
+     --authorizer_name task11_cognito_authorizer
 
 syndicate generate meta api_gateway_resource_method \
     --api_name task11_api \
      --path "/reservations" \
      --method POST \
      --integration_type lambda \
-     --lambda_name api_handler
+     --lambda_name api_handler \
+     --authorization_type CUSTOM \
+     --authorizer_name task11_cognito_authorizer
 
-syndicate generate meta api_gateway_resource_method \
-    --api_name task11_api \
-     --path "/reservations" \
-     --method GET \
-     --integration_type lambda \
-     --lambda_name api_handler
-
+# dynamodb tables generation
 
 syndicate generate meta dynamodb \
     --resource_name Tables \
