@@ -203,7 +203,9 @@ def make_reservation(body):
         # Check if table exists
         table_response = dynamodb.scan(
             TableName=TABLES_TABLE,
-            KeyConditionExpression=Key("number").eq(str(body["tableNumber"]))
+            FilterExpression="#num = :tableNum",
+            ExpressionAttributeNames={"#num": "number"},  # Use ExpressionAttributeNames to handle reserved words
+            ExpressionAttributeValues={":tableNum": {"N": str(body["tableNumber"])}}
         )
         if "Items" not in table_response or not table_response["Items"]:
             raise "Table not found"
