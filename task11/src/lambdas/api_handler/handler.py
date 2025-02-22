@@ -38,7 +38,7 @@ def lambda_handler(event, context):
     elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
         body = json.loads(event['body'])
         return make_reservation(body)
-    elif event["httpMethod"] == "POST" and event["resource"] == "/reservations":
+    elif event["httpMethod"] == "GET" and event["resource"] == "/reservations":
         return get_reservations()
     else:
         response = {
@@ -198,6 +198,15 @@ def make_reservation(body):
         
         # Validate date format
         datetime.strptime(body["date"], "%Y-%m-%d")
+
+        # Check if table exists
+        table_response = dynamodb.scan(TableName=TABLES_TABLE, 
+                                        FilterExpression="number = :tableNum",
+                                        ExpressionAttributeValues={":tableNum": {"N": str(body["tableNumber"])}}
+        )
+        if "Items" not in table_response or not table_response["Items"]:
+            raise "Table not found"
+
 
         # Generate a unique reservation ID
         reservation_id = str(uuid.uuid4())
