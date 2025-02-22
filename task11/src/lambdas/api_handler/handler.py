@@ -112,14 +112,14 @@ def signin(email, password):
 def create_table(body):
     try:
         item = {
-            "id": {"N": body["id"]},
-            "number": {"N": body["number"]},
-            "places": {"N": body["places"]},
+            "id": {"N": str(body["id"])},
+            "number": {"N": str(body["number"])},
+            "places": {"N": str(body["places"])},
             "isVip": {"BOOL": body["isVip"]},
         }
 
         if "minOrder" in body:
-            item["minOrder"] = {"N": body["minOrder"]}
+            item["minOrder"] = {"N": str(body["minOrder"])}
 
         logger.info(f'Tables table name: {TABLES_TABLE}')
         logger.info(f'Item to put to dynamodb: {json.dumps(item)}')
@@ -137,7 +137,8 @@ def create_table(body):
 
 def get_tables():
     try:
-        response = dynamodb.scan(TableName=TABLES_TABLE)
+        table = dynamodb.Table(TABLES_TABLE)
+        response = table.scan()
         tables = response.get("Items", [])
         return {"statusCode": 200, "body": json.dumps({"tables": tables})}
     except Exception as e:
@@ -149,7 +150,8 @@ def get_tables():
 
 def get_table(table_id):
     try:
-        response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"id": int(table_id)})
+        table = dynamodb.Table(TABLES_TABLE)
+        response = table.get_item(Key={"id": int(table_id)})
         if "Item" not in response:
             raise Exception("Table not found")
         return {"statusCode": 200, "body": json.dumps(response["Item"])}
@@ -198,7 +200,7 @@ def make_reservation(body):
         # Create reservation item
         reservation = {
             "reservationId": {"S": reservation_id},
-            "tableNumber": {"N": body["tableNumber"]},
+            "tableNumber": {"N": str(body["tableNumber"])},
             "clientName": {"S": body["clientName"]},
             "phoneNumber": {"S": body["phoneNumber"]},
             "date": {"S": body["date"]},
@@ -229,7 +231,7 @@ def get_reservations():
         
         for item in response.get("Items", []):
             reservations.append({
-                "tableNumber": item["tableNumber"]["N"],
+                "tableNumber": int(item["tableNumber"]["N"]),
                 "clientName": item["clientName"]["S"],
                 "phoneNumber": item["phoneNumber"]["S"],
                 "date": item["date"]["S"],
