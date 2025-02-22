@@ -16,12 +16,13 @@ def lambda_handler(event, context):
     logger.info(json.dumps(event, indent=4))
     body = json.loads(event['body'])
     request_path = event['resource']
+    request_method = event['httpMethod']
     email = body.get('email')
     password = body.get('password')
 
-    if request_path == '/login':
+    if request_path == '/login' & request_method == "POST":
         response = login(email, password)
-    elif request_path == '/signup':
+    elif request_path == '/signup' & request_method == "POST":
         response = signup(email, password)
     else:
         response = {
