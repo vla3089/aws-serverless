@@ -20,9 +20,9 @@ def lambda_handler(event, context):
     email = body.get('email')
     password = body.get('password')
 
-    if request_path == '/login' & request_method == "POST":
+    if request_path == '/login' and request_method == "POST":
         response = login(email, password)
-    elif request_path == '/signup' & request_method == "POST":
+    elif request_path == '/signup' and request_method == "POST":
         response = signup(email, password)
     else:
         response = {
