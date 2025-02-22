@@ -113,7 +113,7 @@ def create_table(body):
             item["minOrder"] = {"N": str(body["minOrder"])}
 
         logger.info(f'Tables table name: {TABLES_TABLE}')
-        logger.info(f'Item to put to dynamodb: {item}')
+        logger.info(f'Item to put to dynamodb: {json.dumps(item)}')
         
         dynamodb.put_item(
             TableName = TABLES_TABLE,
