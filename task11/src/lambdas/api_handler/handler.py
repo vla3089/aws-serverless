@@ -5,7 +5,7 @@ import re
 
 import boto3
 
-cognito_client = boto3.client('cognito-idp',
+client = boto3.client('cognito-idp',
                               os.environ.get('region', 'eu-central-1'))
 CUP_ID = os.environ.get('cup_id')
 CLIENT_ID = os.environ.get('cup_client_id')
@@ -51,7 +51,7 @@ def signup(email, password):
         if not re.match(password_pattern, password):
             raise Exception("Password must be at least 12 characters and contain only letters, numbers, and '$%^*-_'.")
 
-        cognito_client.admin_create_user(
+        client.admin_create_user(
             UserPoolId=CUP_ID,
             Username=email,
             UserAttributes=[
@@ -59,7 +59,7 @@ def signup(email, password):
             ],
             MessageAction='SUPPRESS'
         )
-        cognito_client.admin_set_user_password(
+        client.admin_set_user_password(
             UserPoolId=CUP_ID,
             Username=email,
             Password=password,
@@ -76,7 +76,7 @@ def signup(email, password):
 
 def signin(email, password):
     try:
-        response = cognito_client.client.admin_initiate_auth(
+        response = client.admin_initiate_auth(
             UserPoolId=CUP_ID,
             ClientId=CLIENT_ID,
             AuthFlow='ADMIN_USER_PASSWORD_AUTH',
