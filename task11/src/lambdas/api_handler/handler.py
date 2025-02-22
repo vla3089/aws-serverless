@@ -86,7 +86,7 @@ def signin(email, password):
             }
         )
         logger.info(json.dumps(response, indent=4))
-        return {"statusCode": 200, "body": json.dumps({"accessToken": response["AuthenticationResult"]["AccessToken"]})}
+        return {"statusCode": 200, "body": json.dumps({"accessToken": response["AuthenticationResult"]["IdToken"]})}
     except Exception as e:
         error_log = {
             "error": str(e),
