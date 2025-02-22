@@ -195,7 +195,7 @@ def make_reservation(body):
         # Validate required fields
         required_fields = ["tableNumber", "clientName", "phoneNumber", "date", "slotTimeStart", "slotTimeEnd"]
         if not all(field in body for field in required_fields):
-            raise "Missing required fields"
+            raise Exception("Missing required fields")
         
         # Validate date format
         datetime.strptime(body["date"], "%Y-%m-%d")
@@ -208,7 +208,7 @@ def make_reservation(body):
             ExpressionAttributeValues={":tableNum": {"N": str(body["tableNumber"])}}
         )
         if "Items" not in table_response or not table_response["Items"]:
-            raise "Table not found"
+            raise Exception("Table not found")
 
 
         # Generate a unique reservation ID
