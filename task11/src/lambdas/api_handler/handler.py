@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 
 import boto3
 
@@ -38,6 +39,18 @@ def lambda_handler(event, context):
 
 def signup(email, password):
     try:
+
+        """
+        Enforces a custom password policy in AWS Cognito.
+        - Password must be alphanumeric + only "$%^*-_"
+        - Must be at least 12 characters long
+        """
+        # Regex for allowed password format
+        password_pattern = r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[$%^*\-_])[A-Za-z\d$%^*\-_]{12,}$"
+
+        if not re.match(password_pattern, password):
+            raise Exception("Password must be at least 12 characters and contain only letters, numbers, and '$%^*-_'.")
+
         cognito_client.admin_create_user(
             UserPoolId=CUP_ID,
             Username=email,
@@ -51,10 +64,6 @@ def signup(email, password):
             Username=email,
             Password=password,
             Permanent=True
-        )
-        cognito_client.admin_confirm_sign_up(
-            UserPoolId=CUP_ID,
-            Username=email
         )
         return {"statusCode": 200}
     except Exception as e:
