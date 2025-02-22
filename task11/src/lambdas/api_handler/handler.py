@@ -138,8 +138,24 @@ def create_table(body):
 def get_tables():
     try:
         response = dynamodb.scan(TableName = TABLES_TABLE)
-        tables = response.get("Items", [])
-        return {"statusCode": 200, "body": json.dumps({"tables": tables})}
+        tables = []
+        
+        for item in response.get("Items", []):
+            table = {
+                "id": int(item["id"]["N"]),
+                "number": int(item["tableNumber"]["N"]),
+                "places": int(item["places"]["N"]),
+                "isVip": item["isVip"]["BOOL"]
+            }
+            if "minOrder" in item:
+                table["minOrder"] = int(item["minOrder"]["N"])
+            
+            tables.append(table)
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"tables": tables})
+        }
     except Exception as e:
         error_log = {
             "error": str(e),
@@ -149,10 +165,17 @@ def get_tables():
 
 def get_table(table_id):
     try:
-        response = dynamodb.get_item(TableName = TABLES_TABLE, Key={"id": {"N" : str(table_id)}})
+        response = dynamodb.get_item(TableName = TABLES_TABLE, Key={"id": {"N" : str(table_id)}})        
         if "Item" not in response:
             raise Exception("Table not found")
-        return {"statusCode": 200, "body": json.dumps(response["Item"])}
+        
+        item = {
+                "id": int(response["Item"]["id"]["N"]),
+                "number": int(response["Item"]["tableNumber"]["N"]),
+                "places": int(response["Item"]["places"]["N"]),
+                "isVip": response["Item"]["isVip"]["BOOL"]
+            }
+        return {"statusCode": 200, "body": json.dumps(item)}
     except Exception as e:
         error_log = {
             "error": str(e),
