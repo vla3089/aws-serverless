@@ -76,9 +76,10 @@ def signup(email, password):
 
 def signin(email, password):
     try:
-        response = cognito_client.client.initiate_auth(
+        response = cognito_client.client.admin_initiate_auth(
+            UserPoolId=CUP_ID,
             ClientId=CLIENT_ID,
-            AuthFlow='USER_PASSWORD_AUTH',
+            AuthFlow='ADMIN_USER_PASSWORD_AUTH',
             AuthParameters={
                 'USERNAME': email,
                 'PASSWORD': password

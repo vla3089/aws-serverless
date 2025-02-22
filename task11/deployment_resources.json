@@ -169,7 +169,7 @@
     "username_attributes": [],
     "custom_attributes": [],
     "client": {
-      "client_name": "client-app",
+      "client_name": "${booking_userpool}",
       "generate_secret": false,
       "explicit_auth_flows": [
         "ALLOW_ADMIN_USER_PASSWORD_AUTH",
