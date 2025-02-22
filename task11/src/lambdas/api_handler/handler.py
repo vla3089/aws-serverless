@@ -105,12 +105,15 @@ def create_table(body):
         table = dynamodb.Table(TABLES_TABLE)
 
         item = {
-            "id": body["id"],
-            "number": body["number"],
-            "places": body["places"],
-            "isVip": body["isVip"],
-            "minOrder": body.get("minOrder", None)
+            "id": {"N": str(body["id"])},
+            "number": {"N": str(body["number"])},
+            "places": {"N": str(body["places"])},
+            "isVip": {"BOOL": body["isVip"]},
         }
+
+        if "minOrder" in body:
+            item["minOrder"] = {"N": str(body["minOrder"])}
+
         logger.info(f'Item to put to dynamodb: {item}')
         
         table.put_item(Item=item)
