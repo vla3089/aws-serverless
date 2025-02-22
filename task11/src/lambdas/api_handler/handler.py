@@ -144,7 +144,7 @@ def get_tables():
             logger.info(f'Item to put to dynamodb: {json.dumps(item)}')
             table = {
                 "id": int(item["id"]["N"]),
-                "number": int(item["tableNumber"]["N"]),
+                "number": int(item["number"]["N"]),
                 "places": int(item["places"]["N"]),
                 "isVip": item["isVip"]["BOOL"]
             }
@@ -173,10 +173,14 @@ def get_table(table_id):
         logger.info(f'Item to put to dynamodb: {json.dumps(response)}')
         item = {
                 "id": int(response["Item"]["id"]["N"]),
-                "number": int(response["Item"]["tableNumber"]["N"]),
+                "number": int(response["Item"]["number"]["N"]),
                 "places": int(response["Item"]["places"]["N"]),
                 "isVip": response["Item"]["isVip"]["BOOL"]
             }
+        
+        if "minOrder" in response["Item"]:
+                item["minOrder"] = int(response["Item"]["minOrder"]["N"])
+
         return {"statusCode": 200, "body": json.dumps(item)}
     except Exception as e:
         error_log = {
@@ -197,7 +201,7 @@ def make_reservation(body):
         
 
         # Check if table exists
-        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"tableNumber": {"N": str(body["tableNumber"])}})
+        table_response = dynamodb.get_item(TableName=TABLES_TABLE, Key={"number": {"N": str(body["tableNumber"])}})
         if "Item" not in table_response:
             raise "Table not found"
         
