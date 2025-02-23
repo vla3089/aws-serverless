@@ -268,6 +268,20 @@ syndicate generate meta api_gateway_resource_method \
      --authorization_type CUSTOM \
      --authorizer_name task11_cognito_authorizer
 
+# # tables/{tableId}
+syndicate generate meta api_gateway_resource \
+    --api_name task11_api \
+    --path tables/{tableId}
+
+syndicate generate meta api_gateway_resource_method \
+    --api_name task11_api \
+     --path "/tables/{tableId}" \
+     --method GET \
+     --integration_type lambda \
+     --lambda_name api_handler \
+     --authorization_type CUSTOM \
+     --authorizer_name task11_cognito_authorizer
+
 # reservations endpoint configuration
 syndicate generate meta api_gateway_resource \
     --api_name task11_api \
@@ -302,3 +316,18 @@ syndicate generate meta dynamodb \
     --resource_name Reservations \
     --hash_key_name key \
     --hash_key_type S 
+
+
+
+
+# task 12
+
+syndicate export \
+    --rest-api-id c1ncb5r503 \
+    --stage-name api \
+    --export-type oas30 \
+    --output-file openapi-spec.json
+
+
+syndicate generate meta s3_bucket \
+    --resource_name api-ui-hoster
