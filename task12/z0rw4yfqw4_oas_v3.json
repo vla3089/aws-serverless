@@ -18,10 +18,10 @@
     "/reservations": {
       "get": {
         "summary": "Returns list of reservations as specified in the response body",
-        "description": "Returns list of reservations as specified in the response body",
+        "description": "Fetches all reservations",
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Successful retrieval",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -32,7 +32,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/ReservationsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -60,10 +70,19 @@
       },
       "post": {
         "summary": "Reserve a table",
-        "description": "Reserves a table making sure reservation does not overlap",
+        "description": "Creates a reservation ensuring no overlap",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservationRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "200 response",
+            "description": "Reservation successfully created",
             "headers": {
               "Access-Control-Allow-Origin": {
                 "schema": {
@@ -74,7 +93,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/ReservationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestError"
                 }
               }
             }
@@ -118,7 +147,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/TablesResponse"
                 }
               }
             }
@@ -147,6 +176,15 @@
       "post": {
         "summary": "Creates table",
         "description": "Creates table",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Table"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -160,7 +198,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/Table"
                 }
               }
             }
@@ -191,6 +229,15 @@
       "post": {
         "summary": "Sign in",
         "description": "Sign in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignInRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -204,7 +251,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/SignInResponse"
                 }
               }
             }
@@ -230,6 +277,15 @@
       "post": {
         "summary": "Sign up",
         "description": "Sign up",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "200 response",
@@ -268,60 +324,231 @@
     "/tables/{tableId}": {
       "get": {
         "summary": "Get table details",
-        "description": "Get table details",
+        "description": "Returns details of a specific table by ID",
         "parameters": [
           {
             "name": "tableId",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "200 response",
-            "headers": {
-              "Access-Control-Allow-Origin": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Empty"
+                  "$ref": "#/components/schemas/Table"
                 }
               }
             }
-          }
-        },
-        "security": [
-          {
-            "task11_cognito_authorizer": []
-          }
-        ],
-        "x-amazon-apigateway-integration": {
-          "httpMethod": "POST",
-          "uri": "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-central-1:905418349556:function:api_handler/invocations",
-          "responses": {
-            "default": {
-              "statusCode": "200",
-              "responseParameters": {
-                "method.response.header.Access-Control-Allow-Origin": "'*'"
-              }
-            }
           },
-          "passthroughBehavior": "when_no_match",
-          "type": "aws_proxy"
+          "404": {
+            "description": "Table not found"
+          }
         }
       }
     }
   },
   "components": {
     "schemas": {
+      "SignupRequest": {
+        "type": "object",
+        "description": "User signup request containing personal details and credentials.",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "User's first name.",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User's last name.",
+            "example": "Doe"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address. Must be a valid email format.",
+            "example": "john.doe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password. Must be at least 12 characters, alphanumeric, and include at least one of '$%^*-_'.",
+            "example": "SecurePass123$"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "password"
+        ]
+      },
+      "SigninRequest": {
+        "type": "object",
+        "description": "User signin request containing email and password.",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address. Must be a valid email format.",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password. Must be at least 12 characters long, alphanumeric, and contain at least one of '$%^*'.",
+            "example": "MySecurePass123$"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "SigninResponse": {
+        "type": "object",
+        "description": "Response after a successful user signin.",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token for authentication.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "accessToken"
+        ]
+      },
+      "Reservation": {
+        "type": "object",
+        "description": "Represents a single reservation entry.",
+        "properties": {
+          "tableNumber": {
+            "type": "integer",
+            "description": "Number of the reserved table.",
+            "example": 5
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Name of the client making the reservation.",
+            "example": "John Doe"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "Client's contact phone number.",
+            "example": "+1234567890"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Reservation date in YYYY-MM-DD format.",
+            "example": "2025-03-15"
+          },
+          "slotTimeStart": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            "description": "Start time of the reservation slot in HH:MM format.",
+            "example": "13:00"
+          },
+          "slotTimeEnd": {
+            "type": "string",
+            "pattern": "^([01]\\d|2[0-3]):([0-5]\\d)$",
+            "description": "End time of the reservation slot in HH:MM format.",
+            "example": "15:00"
+          }
+        },
+        "required": [
+          "tableNumber",
+          "clientName",
+          "phoneNumber",
+          "date",
+          "slotTimeStart",
+          "slotTimeEnd"
+        ]
+      },
+      "ReservationRequest": {
+        "type": "object",
+        "description": "Request payload for creating a new reservation.",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Reservation"
+          }
+        ]
+      },
+      "ReservationsResponse": {
+        "type": "object",
+        "description": "Response containing a list of reservations.",
+        "properties": {
+          "reservations": {
+            "type": "array",
+            "description": "List of reservations.",
+            "items": {
+              "$ref": "#/components/schemas/Reservation"
+            }
+          }
+        },
+        "required": [
+          "reservations"
+        ]
+      },
+      "Table": {
+        "type": "object",
+        "description": "Represents a restaurant table with seating capacity and booking conditions.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the table."
+          },
+          "number": {
+            "type": "integer",
+            "description": "Table number."
+          },
+          "places": {
+            "type": "integer",
+            "description": "Number of seats available at the table."
+          },
+          "isVip": {
+            "type": "boolean",
+            "description": "Indicates if the table is in the VIP section."
+          },
+          "minOrder": {
+            "type": "integer",
+            "description": "Optional deposit required to book the table.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "places",
+          "isVip"
+        ]
+      },
+      "TablesResponse": {
+        "type": "object",
+        "description": "Response containing a list of tables available in the restaurant.",
+        "properties": {
+          "tables": {
+            "type": "array",
+            "description": "List of tables available in the restaurant.",
+            "items": {
+              "$ref": "#/components/schemas/Table"
+            }
+          }
+        },
+        "required": [
+          "tables"
+        ]
+      },
+      "BadRequestError": {
+        "type": "object",
+        "description": "400 Bad Request - The request was invalid or cannot be processed.",
+        "properties": {}
+      },
       "Empty": {
         "title": "Empty Schema",
         "type": "object"
