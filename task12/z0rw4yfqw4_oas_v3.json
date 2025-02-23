@@ -93,7 +93,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ReservationResponse"
+                  "$ref": "#/components/schemas/ReservationsResponse"
                 }
               }
             }
@@ -233,7 +233,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SignInRequest"
+                "$ref": "#/components/schemas/SigninRequest"
               }
             }
           }
@@ -251,7 +251,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SignInResponse"
+                  "$ref": "#/components/schemas/SigninResponse"
                 }
               }
             }
@@ -281,7 +281,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SignUpRequest"
+                "$ref": "#/components/schemas/SignupRequest"
               }
             }
           }
