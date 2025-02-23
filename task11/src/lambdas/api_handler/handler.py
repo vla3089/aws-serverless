@@ -210,6 +210,11 @@ def make_reservation(body):
         if "Items" not in table_response or not table_response["Items"]:
             raise Exception("Table not found")
 
+        if doesOverlapWithExistingReservations(str(body["tableNumber"]), 
+                                               str(body["date"]), 
+                                               str(body["slotTimeStart"]), 
+                                               str(body["slotTimeEnd"])):
+            raise Exception("Overlaps with existing reservation")
 
         # Generate a unique reservation ID
         reservation_id = str(uuid.uuid4())
@@ -266,3 +271,30 @@ def get_reservations():
         }
         logger.exception(json.dumps(error_log, indent=4))  # Logs error with stack trace
         return {"statusCode": 400}
+    
+def doesOverlapWithExistingReservations(table_number, date, slot_start, slot_end):
+    # Fetch all reservations for the given table and date
+    response = dynamodb.scan(
+        TableName=RESERVATIONS_TABLE,
+        FilterExpression="tableNumber = :tableNum AND #date = :date",
+        ExpressionAttributeNames={"#date": "date"},
+        ExpressionAttributeValues={
+            ":tableNum": {"N": str(table_number)},
+            ":date": {"S": date}
+        }
+    )
+
+    # Convert input times to datetime.time objects
+    slot_start_time = datetime.strptime(slot_start, "%H:%M").time()
+    slot_end_time = datetime.strptime(slot_end, "%H:%M").time()
+
+    # Check for overlapping reservations
+    for item in response.get("Items", []):
+        existing_start = datetime.strptime(item["slotTimeStart"]["S"], "%H:%M").time()
+        existing_end = datetime.strptime(item["slotTimeEnd"]["S"], "%H:%M").time()
+
+        # Overlapping conditions:
+        if not (slot_end_time <= existing_start or slot_start_time >= existing_end):
+            return True  # Overlap detected
+
+    return False  # No overlap
