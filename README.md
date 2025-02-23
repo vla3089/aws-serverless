@@ -330,4 +330,11 @@ syndicate export \
 
 
 syndicate generate meta s3_bucket \
-    --resource_name api-ui-hoster
+    --resource_name api-ui-hoster \
+    --static_website_hosting True
+
+
+syndicate generate swagger_ui \
+  --name task12_api_ui \
+  --path_to_spec z0rw4yfqw4_oas_v3.json \
+  --target_bucket api-ui-hoster
